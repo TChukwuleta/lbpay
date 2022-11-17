@@ -149,6 +149,11 @@ const updatePassword = async (data) => {
     }
 }
 
+const count = async (criteria = {}) => {
+    return await User.find(criteria).countDocuments();
+}
+
+
 module.exports = {
     register,
     login,
@@ -158,5 +163,6 @@ module.exports = {
     validateToken,
     updateUserById,
     emailVerification,
-    updatePassword
+    updatePassword,
+    count
 }

@@ -96,5 +96,6 @@ module.exports = {
     decodeInvoice,
     invoiceLookup,
     getFeeReport,
-    payInvoice
+    payInvoice,
+    connectRpc
 }

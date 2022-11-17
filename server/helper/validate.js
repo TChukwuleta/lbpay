@@ -1,6 +1,6 @@
 const Joi = require("joi");
-const ApiError = require("../helpers/ApiError");
-const pick = require("../helpers/pick");
+const ApiError = require("./ApiError");
+const pick = require("./pick");
 
 const validate = (schema) => (req, res, next) => {
   const validSchema = pick(schema, ["params", "query", "body", "headers"]);

@@ -14,7 +14,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors("*"))
 
-// Routes
+// Routes 
 // Index page
 app.get("/", (req, res) => {
     res.status(200).send({ 
