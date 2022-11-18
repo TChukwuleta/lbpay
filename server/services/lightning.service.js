@@ -4,19 +4,24 @@ require("dotenv").config()
 
 const connectRpc = async () => {
     try {
+        const host = process.env.LND_RPC_URL
+        const macaroon = process.env.LND_MACAROON
+        const cert = process.env.LND_RPC_PATH
+
         const lnRpcClient = await lnrpc.createLnRpc({
-            server: process.env.LND_RPC_URL,
-            tls: process.env.LND_RPC_PATH,
-            macaroon: process.env.LND_MACAROON
-            // there is macaroon path
+            server: host,
+            cert: Buffer.from(cert, 'hex').toString('utf-8'),
+            macaroon
         })
         
         const routerClient = await lnrpc.createRouterRpc({
-            server: process.env.LND_RPC_URL,
-            tls: process.env.LND_RPC_PATH,
-            macaroon: process.env.LND_MACAROON
+            server: host,
+            cert: Buffer.from(cert, 'hex').toString('utf-8'),
+            macaroon
             // there is macaroon path
         })
+        const pubkey = await lnRpcClient.getInfo()
+        //console.log(pubkey.identityPubkey)
         return { lnRpcClient, routerClient }
     } catch (error) {
         throw new ApiError(error.code || 500, error.message || error)
@@ -38,17 +43,33 @@ const createInvoice = async (amount) => {
     }
 }
 
-const lookUpInvoiceHash = async (hash) => {
-    try {
-        const { lnRpcClient, routerClient } = await connectRpc()
-        const rHash = Buffer.from(hash, 'base64')
-        const { settled } = await lnRpcClient.lookupInvoice({ rHash })
-        if(!settled) throw new ApiError(400, "Payment has not been made")
-        return settled
-    } catch (error) {
-        throw new ApiError(error.code || 500, error.message || error)
+const lookUpInvoiceHash = async (data) => {
+    const { lnRpcClient, routerClient } = await connectRpc()
+    console.log(data)
+    const rHash = Buffer.from(data.hash, 'base64')
+    const { settled } = await lnRpcClient.lookupInvoice({ rHash });
+    if(!settled){
+        throw new Error("The payment has not been made!")
     }
+    return settled
 }
+
+// const lookUpInvoiceHash = async (data) => {
+//     try {
+//         const { lnRpcClient, routerClient } = await connectRpc()
+//         const key = await lnRpcClient.getInfo()
+//         console.log(key)
+//         console.log("friyoyo")
+//         const rHash = Buffer.from(data.Hash, 'base64')
+//         console.log(rHash) 
+//         console.log("Hello")
+//         const { settled } = await lnRpcClient.lookupInvoice({ rHash })
+//         if(!settled) throw new ApiError(400, "Payment has not been made")
+//         return settled
+//     } catch (error) {
+//         throw new ApiError(error.code || 500, error.message || error)
+//     }
+// }
 
 const decodeInvoice = async (invoice) => {
     try {
@@ -63,7 +84,11 @@ const decodeInvoice = async (invoice) => {
 const invoiceLookup = async (invoice) => {
     try {
         const { lnRpcClient, routerClient } = await connectRpc()
+        console.log("Pre")
         const decoded = await decodeInvoice(invoice)
+        console.log("Step one")
+        console.log(decoded)
+        console.log("Step two")
         const lookUp = await lnRpcClient.lookupInvoice({ rHashStr: decoded.paymentHash })
         return lookUp
     } catch (error) {
@@ -83,6 +108,9 @@ const getFeeReport = async () => {
 const payInvoice = async (invoice) => {
     try {
         const { lnRpcClient, routerClient } = await connectRpc()
+        console.log("gotten here")
+        const test = await routerClient.sendPayment({ paymentHash: invoice, timeoutSeconds: 360 })
+        console.log(test)
         const invoicePay = await routerClient.sendPaymentV2({ paymentRequest: invoice, timeoutSeconds: 360 })
         return invoicePay
     } catch (error) {

@@ -1,7 +1,7 @@
 const ApiError = require("../helper/ApiError")
 const catchAsync = require("../helper/catchAsync")
 const pick = require("../helper/pick")
-const { authService } = require("../services")
+const { authService, tokenService } = require("../services")
 require("dotenv").config()
 
 const register = catchAsync(async (req, res) => {
@@ -12,16 +12,8 @@ const register = catchAsync(async (req, res) => {
     }
     const user = await authService.register(userRequest)
     const tokens = await tokenService.generateAuthTokens(user, true)
-    const template = "/templates/views/verification-code.html"
-    const subject = "Verify Your PennyBit Account"
-    const to = req.body.email
-    const data = {
-        "name": req.body.firstName,
-        "token": token
-    }
-    sendMail(to, template, subject, data)
     res.status(201).send({
-        message: "Youngster registration was successful",
+        message: "User registration was successful",
         data: {
             user,
             token: tokens.access.token
@@ -32,10 +24,12 @@ const register = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
     const { email, password } = req.body
     const user = await authService.login(email, password)
+    const token = await tokenService.generateAuthTokens(user)
     res.status(201).send({
         message: "Login was successful",
         data: {
-            user
+            user,
+            token: token.access.token
         }
     })
 })

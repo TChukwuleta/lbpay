@@ -7,4 +7,4 @@ const coldWallet = process.env.COLD_WALLET || 'coldwallet'
 module.exports = {
     hotWallet,
     coldWallet
-}
+}  

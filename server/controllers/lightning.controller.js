@@ -23,7 +23,40 @@ const lndInvoice = catchAsync(async (req, res) => {
     })
 })
 
+const lookUpInvoiceWithHash = catchAsync(async (req, res) => {
+    const user = await authService.getUserById(req.user._id)
+    if(!user) throw new ApiError(400, "No user found")
+    const lookUpHash = await lightningService.lookUpInvoiceHash(req.body)
+    res.status(201).send({
+        message: "Invoice lookup was successful",
+        data: { lookUpHash }
+    })
+})
+
+const lookUpInvoiceWithInvoice = catchAsync(async (req, res) => {
+    const user = await authService.getUserById(req.user._id)
+    if(!user) throw new ApiError(400, "No user found")
+    const lookUpInvoiceHash = await lightningService.invoiceLookup(req.body.invoice)
+    res.status(201).send({
+        message: "Invoice lookup was successful",
+        data: { lookUpInvoiceHash }
+    })
+})
+
+const payLndInvoice = catchAsync(async (req, res) => {
+    const user = await authService.getUserById(req.user._id)
+    if(!user) throw new ApiError(400, "No user found")
+    const payinvoice = await lightningService.payInvoice(req.body.invoice)
+    res.status(201).send({
+        message: "Invoice payment was successful",
+        data: { payinvoice }
+    })
+})
+
 module.exports = {
     lndConnect,
-    lndInvoice
+    lndInvoice,
+    lookUpInvoiceWithHash,
+    lookUpInvoiceWithInvoice,
+    payLndInvoice
 }
