@@ -51,10 +51,10 @@ const payLndInvoice = catchAsync(async (req, res) => {
         message: "Invoice payment was successful",
         data: { payinvoice }
     })
-})
+}) 
 
 module.exports = {
-    lndConnect,
+    lndConnect, 
     lndInvoice,
     lookUpInvoiceWithHash,
     lookUpInvoiceWithInvoice,

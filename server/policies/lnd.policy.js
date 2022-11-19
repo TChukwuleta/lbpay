@@ -20,7 +20,7 @@ const lookUpInvoice = {
 
 const createInvoice = {
     body: Joi.object().keys({
-      amount: Joi.string().required().messages({
+      amount: Joi.required().messages({
         "string.empty": `amount cannot be an empty field`,
         "any.required": `amount is a required field`,
       })

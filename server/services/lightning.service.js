@@ -28,10 +28,37 @@ const connectRpc = async () => {
     }
 }
 
+const connectBobRpc = async () => {
+    try {
+        const host = process.env.BOB_LND_RPC_URL
+        const macaroon = process.env.BOB_LND_MACAROON
+        const cert = process.env.BOB_LND_RPC_PATH
+
+        const lnRpcClient = await lnrpc.createLnRpc({
+            server: host,
+            cert: Buffer.from(cert, 'hex').toString('utf-8'),
+            macaroon
+        })
+        
+        const routerClient = await lnrpc.createRouterRpc({
+            server: host,
+            cert: Buffer.from(cert, 'hex').toString('utf-8'),
+            macaroon
+            // there is macaroon path
+        })
+        const pubkey = await lnRpcClient.getInfo()
+        //console.log(pubkey.identityPubkey)
+        return { lnRpcClient, routerClient }
+    } catch (error) {
+        throw new ApiError(error.code || 500, error.message || error)
+    }
+}
+
 const createInvoice = async (amount) => {
     try {
+        console.log(amount.amount)
         const { lnRpcClient, routerClient } = await connectRpc()
-        const invoice = await lnRpcClient.addInvoice({ value: amount.toString() })
+        const invoice = await lnRpcClient.addInvoice({ value: amount.amount.toString() })
         var invoiceData = {
             PaymentRequest: invoice.paymentRequest,
             Hash: (invoice.rHash).toString('base64'),
@@ -87,13 +114,13 @@ const invoiceLookup = async (invoice) => {
         console.log("Pre")
         const decoded = await decodeInvoice(invoice)
         console.log("Step one")
-        console.log(decoded)
+        console.log(decoded) 
         console.log("Step two")
         const lookUp = await lnRpcClient.lookupInvoice({ rHashStr: decoded.paymentHash })
         return lookUp
     } catch (error) {
         throw new ApiError(error.code || 500, error.message || error)
-    }
+    } 
 }
 
 const getFeeReport = async () => {
@@ -106,15 +133,41 @@ const getFeeReport = async () => {
 }
 
 const payInvoice = async (invoice) => {
-    try {
-        const { lnRpcClient, routerClient } = await connectRpc()
+    try { 
+        const { lnRpcClient, routerClient } = await connectBobRpc()
         console.log("gotten here")
-        const test = await routerClient.sendPayment({ paymentHash: invoice, timeoutSeconds: 360 })
-        console.log(test)
-        const invoicePay = await routerClient.sendPaymentV2({ paymentRequest: invoice, timeoutSeconds: 360 })
-        return invoicePay
+        //const test = await routerClient.sendPayment({ paymentHash: invoice, timeoutSeconds: 360 })
+        //console.log(test)
+        // const first = await lnRpcClient.sendPayment({ paymentRequest: invoice })
+        // console.log("First test")
+        // console.log(first)
+        const invoicePay = await routerClient.sendPaymentV2({ paymentRequest: invoice })
+        console.log("Payment test two")
+        console.log(invoicePay)
+        return JSON.parse(JSON.stringify(invoicePay))
     } catch (error) {
         throw new ApiError(error.code || 500, error.message || error)
+    }
+}
+
+const subscribeToInvoice = async (invoice) => {
+    try {
+        const { lnRpcClient, routerClient } = await connectRpc()
+        const subscribe = await lnRpcClient.subscribeInvoices({ addIndex: invoice.addIndex })
+        subscribe.on('data', async (response) => {
+            const paymentValue = Number(response.value)
+            // convert satoshi to BTC
+            const btcValue = paymentValue / 100000000
+            if(response.settled){
+                return response
+            }
+            else{
+                console.log(response)
+                throw new ApiError(400, "an error occured")
+            }
+        })
+    } catch (error) {
+        
     }
 }
 
@@ -122,7 +175,7 @@ module.exports = {
     createInvoice,
     lookUpInvoiceHash,
     decodeInvoice,
-    invoiceLookup,
+    invoiceLookup, 
     getFeeReport,
     payInvoice,
     connectRpc
