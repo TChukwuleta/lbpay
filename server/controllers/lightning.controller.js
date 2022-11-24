@@ -1,5 +1,6 @@
 const ApiError = require("../helper/ApiError")
 const catchAsync = require("../helper/catchAsync")
+const qrCode = require("../helper/qrcode")
 const { lightningService, authService } = require("../services")
 require("dotenv").config()
 
@@ -10,6 +11,15 @@ const lndConnect = catchAsync(async (req, res) => {
     res.status(201).send({
         message: "LND connection was successful",
         data: { connection }
+    })
+})
+
+
+const qrCoderHelper = catchAsync(async (req, res) => {
+    const codeGeneration = await qrCode.uploadFile("Shoemaker")
+    res.status(201).send({
+        message: "LND connection was successful",
+        data: { codeGeneration }
     })
 })
 
@@ -58,5 +68,6 @@ module.exports = {
     lndInvoice,
     lookUpInvoiceWithHash,
     lookUpInvoiceWithInvoice,
-    payLndInvoice
+    payLndInvoice,
+    qrCoderHelper
 }

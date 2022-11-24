@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@radar/lnrpc": "^0.11.1-beta.1"
+    "@radar/lnrpc": "^0.11.1-beta.1",
+    "qrcode": "^1.5.1"
   }
 }

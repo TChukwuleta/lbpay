@@ -4,6 +4,7 @@ const lightningController = require("../controllers/lightning.controller")
 const { authService } = require("../services")
 const lndPolicy = require("../policies/lnd.policy")
 const router = express.Router()
+const qrcodeHelper = require("../helper/qrcode")
 
 
 router.post(
@@ -11,6 +12,8 @@ router.post(
     [authService.validateToken],
     lightningController.lndConnect
 )
+
+router.post('/qrcode', lightningController.qrCoderHelper)
 
 router.post(
     "/generateinvoice",
