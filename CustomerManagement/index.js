@@ -8,6 +8,11 @@ const PORT =  process.env.PORT
 const StartServer = async () => {
     const app = express()
     await databaseConnection()
+    app.get('/', (req, res) => {
+        res.status(200).send({
+            message: "Welcome to LBPay"
+        })
+    })
     await lbpayapp(app)
     app.listen(PORT, () => {
         console.log(`Speak Lord, your servant is listening on port ${PORT}`)
