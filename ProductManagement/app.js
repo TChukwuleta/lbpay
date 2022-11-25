@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-const { customer, appEvents } = require('./api')
+const { product, appEvents } = require('./api')
 const Table = require('cli-table')
 const listAllRoutes = require('express-list-endpoints')
 const handleErrors = require('./utils/error-handler')
@@ -16,13 +16,7 @@ module.exports = async (app) => {
     appEvents(app)
 
     // API
-    app.get('/', (req, res) => {
-        res.status(200).send({
-            message: "Welcome to LBPay"
-        }) 
-    })
-
-    customer(app)
+    product(app)
 
     // Error handling
     app.use(handleErrors) 

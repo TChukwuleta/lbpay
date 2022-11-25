@@ -1,3 +1,4 @@
 module.exports = {
-    customer: require('./customer')
+    product: require('./product'),
+    appEvents: require('./middlewares/appEvensts')
 }
