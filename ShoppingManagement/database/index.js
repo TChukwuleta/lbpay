@@ -1,4 +1,4 @@
 module.exports = {
     databaseConnection: require('./connection'),
-    CustomerRepository: require('./repository/customerRepository')
+    ShoppingRepository: require('./repository/shoppingRepository')
 }
