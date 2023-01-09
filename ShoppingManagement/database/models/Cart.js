@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const schema = mongoose.Schema
 
-const cartSchema = ({
+const cartSchema = new schema ({
     customerId: {
         type: String
     },
@@ -18,16 +18,16 @@ const cartSchema = ({
         },
         unit: {
             type: Number,
-            require: true
+            require: true 
         }
     }]
 },{
     toJSON: {
         transform(doc, ret){
-            delete ret.__v;
+            delete ret.__v
         }
     },
     timestamps: true
 })
 
-module.exports = mongoose.Model('cart', cartSchema)
+module.exports = mongoose.model('cart', cartSchema)

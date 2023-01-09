@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt  = require('jsonwebtoken');
+const axios = require('axios')
 require("dotenv").config()
 
 //Utility functions
@@ -62,4 +63,8 @@ module.exports.FormateData = (data) => {
         }else{
                 throw new Error('Data Not found!')
         }
+}
+
+module.exports.PublishCustomerEvent = async (payload) => {
+        axios.post('http://localhost:8000/app-events', { payload })
 }

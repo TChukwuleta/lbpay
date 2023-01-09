@@ -15,4 +15,4 @@ app.use('/shipping', proxy(`${process.env.ShippingUrl}`))
 
 app.listen(PORT, () => {
     console.log(`Speak Lord, your gateway is listening on port ${PORT}`)
-}) 
+})

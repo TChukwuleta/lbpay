@@ -18,7 +18,9 @@ class CustomerService {
                     const token = await GenerateSignature({ email: existingCustomer.email, _id: existingCustomer._id })
                     return FormateData({ id: existingCustomer._id, token })
                 }
+                throw new Error("Invalid Email and Password")
             }
+            throw new Error("Invalid email and password")
         } catch (error) {
             throw new APIError('Data not found', error)   
         }
@@ -131,4 +133,4 @@ class CustomerService {
     }
 }
 
-module.exports = CustomerService
+module.exports = CustomerService  

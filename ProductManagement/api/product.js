@@ -14,7 +14,7 @@ module.exports = (app) => {
         }
     })
 
-    app.get('product/category/:type', async (req, res, next) => {
+    app.get('/product/category/:type', async (req, res, next) => {
         const type = req.params.type
         try {
             const { data } = await service.GetProductsByCategory(type)

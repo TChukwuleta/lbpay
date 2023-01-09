@@ -63,6 +63,19 @@ class ShoppingService{
                 break;
         }
     }
+
+    async GetOrderPayload(userId, order, event){
+        if(order){
+            const payload = {
+                event,
+                data: { userId, order }
+            }
+            return FormateData(payload)
+        }
+        else{
+            return FormateData({ error: 'No order available' })
+        }
+    }
 }
 
 module.exports = ShoppingService

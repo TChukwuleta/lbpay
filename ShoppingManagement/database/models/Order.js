@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const schema = mongoose.Schema
 
-const orderSchema = ({
+const orderSchema = new schema ({
     orderId: String,
     customerId:String,
     amount: Number,
@@ -28,10 +28,10 @@ const orderSchema = ({
 },{
     toJSON: {
         transform(doc, ret){
-            delete ret.__v;
+            delete ret.__v
         }
     },
     timestamps: true
 })
 
-module.exports = mongoose.Model('order', orderSchema)
+module.exports = mongoose.model('order', orderSchema)
